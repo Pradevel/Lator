@@ -11,7 +11,6 @@ def record_audio(output_file, record_seconds=5, sample_rate=16000):
 
     print("Recording...")
     frames = []
-
     for _ in range(0, int(sample_rate / 1024 * record_seconds)):
         data = stream.read(1024)
         frames.append(data)
