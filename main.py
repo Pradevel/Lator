@@ -4,6 +4,9 @@ import json
 from vosk import Model, KaldiRecognizer
 from gtts import gTTS
 from deep_translator import GoogleTranslator
+import tkinter as tk
+from tkinter import messagebox, filedialog
+
 
 def record_audio(output_file, record_seconds=5, sample_rate=16000):
     p = pyaudio.PyAudio()
@@ -52,15 +55,38 @@ def text_to_speech(text, output_file):
     tts.save(output_file)
 
 
-if __name__ == "__main__":
+def record_and_process():
+    record_seconds = int(record_duration_entry.get())
     recorded_wav = "recorded.wav"
     output_mp3 = "output.mp3"
-    record_audio(recorded_wav)
+
+    record_audio(recorded_wav, record_seconds)
     recognized_text = recognize_speech(recorded_wav)
-    print("Recognized Text:", recognized_text)
+    recognized_text_label.config(text=f"Recognized Text: {recognized_text}")
 
     translated_text = translate_to_hindi(recognized_text)
-    print("Translated Text:", translated_text)
+    translated_text_label.config(text=f"Translated Text: {translated_text}")
 
     text_to_speech(translated_text, output_mp3)
-    print(f"Translation and Speech saved to {output_mp3}")
+    messagebox.showinfo("Completed", f"Translation and Speech saved to {output_mp3}")
+
+
+root = tk.Tk()
+root.title("Speech Translator")
+root.geometry("400x300")
+
+tk.Label(root, text="Recording Duration (seconds):").pack(pady=10)
+record_duration_entry = tk.Entry(root)
+record_duration_entry.pack(pady=5)
+record_duration_entry.insert(0, "5")
+
+recognized_text_label = tk.Label(root, text="Recognized Text: ")
+recognized_text_label.pack(pady=10)
+
+translated_text_label = tk.Label(root, text="Translated Text: ")
+translated_text_label.pack(pady=10)
+
+process_button = tk.Button(root, text="Record and Translate", command=record_and_process)
+process_button.pack(pady=20)
+
+root.mainloop()
